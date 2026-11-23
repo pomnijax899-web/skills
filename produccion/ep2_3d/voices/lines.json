@@ -1,0 +1,11 @@
+[
+ {"id":"narr1","who":"NARR","text":"Veinte años de cartas. Una cada semana.","voice":"es-MX-DaliaNeural","rate":"-10%","pitch":"-6Hz"},
+ {"id":"narr2","who":"NARR","text":"Y ninguna llegó a mis manos.","voice":"es-MX-DaliaNeural","rate":"-12%","pitch":"-6Hz"},
+ {"id":"elv1","who":"ELVIRA","text":"Hoy cumpliste nueve años. Te vi desde lejos, en la plaza.","voice":"es-PE-CamilaNeural","rate":"-14%","pitch":"-6Hz"},
+ {"id":"elv2","who":"ELVIRA","text":"Tenías mi misma risa... y no pude abrazarte.","voice":"es-PE-CamilaNeural","rate":"-16%","pitch":"-7Hz"},
+ {"id":"elv3","who":"ELVIRA","text":"Algún día vas a entender por qué me quedé lejos.","voice":"es-PE-CamilaNeural","rate":"-16%","pitch":"-8Hz"},
+ {"id":"mar1","who":"MARISOL","text":"¿Por qué nunca me buscaste, abuela?","voice":"es-MX-DaliaNeural","rate":"-16%","pitch":"-4Hz"},
+ {"id":"tom1","who":"TOMAS","text":"¿Marisol? ¿Qué es todo esto?","voice":"es-MX-JorgeNeural","rate":"-6%","pitch":"-3Hz"},
+ {"id":"mar2","who":"MARISOL","text":"Nada. Papeles viejos de la abuela.","voice":"es-MX-DaliaNeural","rate":"-4%","pitch":"-2Hz"},
+ {"id":"tom2","who":"TOMAS","text":"Traje los papeles de la venta. Solo falta tu firma.","voice":"es-MX-JorgeNeural","rate":"-8%","pitch":"-4Hz"}
+]
