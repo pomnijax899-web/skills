@@ -31,6 +31,9 @@ export type CharProps = {
   who: 'marisol' | 'aurelio';
   f: number;
   talk?: boolean;
+  mouth?: number; // 0..1.2 envolvente de la voz
+  gesture?: number; // 0..1 gesto de mano al hablar
+  handToChest?: number;
   mood?: 'neutral' | 'worried' | 'shock';
   position?: [number, number, number];
   rotY?: number;
@@ -50,14 +53,27 @@ const MAT: Record<string, THREE.MeshStandardMaterial> = {};
 const m = (key: string, color: string, rough = 0.7, metal = 0) => (MAT[key] ||= std(color, rough, metal));
 
 export const Character: React.FC<CharProps> = ({
-  who, f, talk = false, mood = 'neutral', position = [0, 0, 0], rotY = 0, walk = 0, headYaw = 0, headPitch = 0,
+  who, f, talk = false, mouth = 0, gesture = 0, handToChest = 0, mood = 'neutral', position = [0, 0, 0], rotY = 0, walk = 0, headYaw = 0, headPitch = 0,
   armR = [0.05, 0.12], armL = [0.05, -0.12], elbowR = 0.1, umbrella = false, children, seed = 0, scale = 1,
 }) => {
   const M = who === 'marisol';
   const skin = m(`skin${who}`, M ? '#e9b48f' : '#b98259', 0.55);
   const skinDark = m(`skind${who}`, M ? '#cf8f6c' : '#8f5f3d', 0.6);
   const hairC = m('hairM', '#15101c', 0.45);
-  const top = m(`top${who}`, M ? '#e2a62e' : '#f2e8d4', 0.85);
+  const top = (MAT[`top${who}`] ||= (() => {
+    const mat = std(M ? '#e2a62e' : '#f2e8d4', 0.9);
+    if (M) {
+      const k = tex((c, w, h) => {
+        c.fillStyle = '#808080'; c.fillRect(0, 0, w, h);
+        for (let y = 0; y < h; y += 16) for (let x = 0; x < w; x += 16) {
+          c.fillStyle = '#d0d0d0'; c.beginPath(); c.ellipse(x + 4, y + 8, 3.5, 7, 0.5, 0, 7); c.fill();
+          c.beginPath(); c.ellipse(x + 12, y + 8, 3.5, 7, -0.5, 0, 7); c.fill();
+        }
+      }, 128, 128, 10, 10);
+      mat.bumpMap = k; mat.bumpScale = 1.6;
+    }
+    return mat;
+  })());
   const vest = m('vest', '#6b4a30', 0.8);
   const pants = m(`pants${who}`, M ? '#2f2a45' : '#3d3226', 0.85);
   const shoe = m('shoe', '#1d1410', 0.5);
@@ -72,7 +88,11 @@ export const Character: React.FC<CharProps> = ({
   const t = f + seed * 13;
   const breathe = Math.sin(t / 22) * 0.008;
   const blink = (f + seed * 29) % 100 < 4 ? 0.08 : 1;
-  const open = talk ? 0.35 + Math.abs(Math.sin(f * 0.85 + seed)) * 0.65 : 0;
+  const open0 = mouth > 0.02 ? Math.min(1, mouth) : talk ? 0.35 + Math.abs(Math.sin(f * 0.85 + seed)) * 0.65 : 0;
+  const open = mood === 'shock' ? Math.max(open0, 0.3) : open0;
+  const sac = Math.floor((f + seed * 17) / 37);
+  const dart = [(random(`sx${who}${sac}`) - 0.5) * 0.006, (random(`sy${who}${sac}`) - 0.5) * 0.004];
+  const lid = mood === 'shock' ? 0.0 : mood === 'worried' ? 0.32 : 0.18;
   const swing = Math.sin(walk) * 0.55;
   const bob = walk ? Math.abs(Math.cos(walk)) * 0.035 : 0;
   const browLift = mood === 'worried' ? 0.016 : mood === 'shock' ? 0.03 : 0;
@@ -81,11 +101,18 @@ export const Character: React.FC<CharProps> = ({
   const stoop = M ? 0 : 0.1;
 
   const eye = (sx: number) => (
-    <group position={[sx * 0.068, 0.025, 0.145]} scale={[eyeS, eyeS * blink, eyeS]}>
+    <group position={[sx * 0.068, 0.025, 0.145]} scale={[eyeS, eyeS, eyeS]}>
       <mesh material={white} scale={[1, 1.18, 0.55]}><sphereGeometry args={[0.046, 24, 20]} /></mesh>
-      <mesh material={iris} position={[sx * 0.004 + headYaw * 0.01, 0, 0.018]} scale={[1, 1, 0.5]}><sphereGeometry args={[0.03, 20, 16]} /></mesh>
-      <mesh material={pupil} position={[sx * 0.004 + headYaw * 0.01, 0, 0.026]} scale={[1, 1, 0.5]}><sphereGeometry args={[0.016, 16, 12]} /></mesh>
-      <mesh position={[-0.01 + headYaw * 0.01, 0.014, 0.034]}><sphereGeometry args={[0.008, 8, 8]} /><meshBasicMaterial color="#ffffff" /></mesh>
+      <group position={[dart[0], dart[1], 0]}>
+        <mesh material={iris} position={[sx * 0.004 + headYaw * 0.01, 0, 0.018]} scale={[1, 1, 0.5]}><sphereGeometry args={[0.03, 20, 16]} /></mesh>
+        <mesh material={pupil} position={[sx * 0.004 + headYaw * 0.01, 0, 0.026]} scale={[1, 1, 0.5]}><sphereGeometry args={[0.016, 16, 12]} /></mesh>
+        <mesh position={[-0.01 + headYaw * 0.01, 0.014, 0.034]}><sphereGeometry args={[0.008, 8, 8]} /><meshBasicMaterial color="#ffffff" /></mesh>
+        <mesh position={[0.008, -0.01, 0.033]}><sphereGeometry args={[0.004, 6, 6]} /><meshBasicMaterial color="#ffffff" /></mesh>
+      </group>
+      {/* párpado superior */}
+      <mesh material={skin} rotation={[-0.55 + lid * 1.1 + (1 - blink) * 2.2, 0, sx * (mood === 'worried' ? -0.25 : 0)]} scale={[1.08, 1.22, 0.62]}>
+        <sphereGeometry args={[0.048, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2]} />
+      </mesh>
       {M && <mesh position={[0, 0.045, 0.012]} rotation={[0, 0, Math.PI / 2]} material={m('lash', '#0b0710', 0.5)}><capsuleGeometry args={[0.004, 0.07, 4, 8]} /></mesh>}
     </group>
   );
@@ -187,18 +214,18 @@ export const Character: React.FC<CharProps> = ({
         </group>
 
         {/* brazos */}
-        <group position={[-0.215, 0.27, 0]} rotation={[-swing * 0.9 + armL[0], 0, armL[1]]}>
+        <group position={[-0.215, 0.27, 0]} rotation={[-swing * 0.9 + armL[0] - gesture * (0.55 + Math.sin(f / 7 + seed) * 0.2) - handToChest * 1.2, 0, armL[1] - handToChest * 0.6]}>
           <mesh material={top} position={[0, -0.16, 0]} castShadow><capsuleGeometry args={[0.052, 0.26, 6, 12]} /></mesh>
-          <group position={[0, -0.34, 0]} rotation={[-0.15, 0, 0]}>
+          <group position={[0, -0.34, 0]} rotation={[-0.15 - gesture * (0.7 + Math.sin(f / 5 + seed) * 0.25) - handToChest * 1.5, 0, 0]}>
             <mesh material={top} position={[0, -0.15, 0]}><capsuleGeometry args={[0.046, 0.24, 6, 12]} /></mesh>
-            <mesh material={skin} position={[0, -0.32, 0]}><sphereGeometry args={[0.052, 14, 12]} /></mesh>
+            <group position={[0, -0.33, 0]}><mesh material={skin} scale={[0.85, 1.15, 0.7]}><sphereGeometry args={[0.055, 16, 12]} /></mesh><mesh material={skin} position={[0.035, 0.01, 0.025]} rotation={[0.4, 0, -0.6]}><capsuleGeometry args={[0.016, 0.035, 4, 8]} /></mesh></group>
           </group>
         </group>
         <group position={[0.215, 0.27, 0]} rotation={[swing * 0.9 + armR[0], 0, armR[1]]}>
           <mesh material={top} position={[0, -0.16, 0]} castShadow><capsuleGeometry args={[0.052, 0.26, 6, 12]} /></mesh>
           <group position={[0, -0.34, 0]} rotation={[-elbowR, 0, 0]}>
             <mesh material={top} position={[0, -0.15, 0]}><capsuleGeometry args={[0.046, 0.24, 6, 12]} /></mesh>
-            <mesh material={skin} position={[0, -0.32, 0]}><sphereGeometry args={[0.052, 14, 12]} /></mesh>
+            <group position={[0, -0.33, 0]}><mesh material={skin} scale={[0.85, 1.15, 0.7]}><sphereGeometry args={[0.055, 16, 12]} /></mesh><mesh material={skin} position={[0.035, 0.01, 0.025]} rotation={[0.4, 0, -0.6]}><capsuleGeometry args={[0.016, 0.035, 4, 8]} /></mesh></group>
             <group position={[0, -0.34, 0.02]}>{children}</group>
           </group>
         </group>
@@ -295,3 +322,18 @@ export const Letter3D: React.FC<{position: [number, number, number]; rot: [numbe
     <mesh position={[0, 0.03, 0.007]} rotation={[0, 0, 0]}><boxGeometry args={[0.3, 0.003, 0.002]} /><meshStandardMaterial color="#6b4a12" /></mesh>
   </group>
 );
+
+/* ---------- Halo luminoso (bloom barato) ---------- */
+let GLOW_TEX: THREE.Texture | null = null;
+export const Glow: React.FC<{position: [number, number, number]; size: number; color?: string; opacity?: number}> = ({position, size, color = '#ffc070', opacity = 0.6}) => {
+  GLOW_TEX ||= tex((c, w, h) => {
+    const g = c.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w / 2);
+    g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(0.15, 'rgba(255,255,255,.55)'); g.addColorStop(0.45, 'rgba(255,255,255,.12)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+    c.fillStyle = g; c.fillRect(0, 0, w, h);
+  }, 128, 128);
+  return (
+    <sprite position={position} scale={[size, size, 1]}>
+      <spriteMaterial map={GLOW_TEX} color={color} transparent opacity={opacity} blending={THREE.AdditiveBlending} depthWrite={false} fog={false} />
+    </sprite>
+  );
+};

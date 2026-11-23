@@ -1,7 +1,7 @@
 import React, {useMemo} from 'react';
 import * as THREE from 'three';
 import {random} from 'remotion';
-import {std, tex, Letter3D, Dust, smooth, seg} from './kit3d';
+import {std, tex, Letter3D, Dust, smooth, seg, Glow} from './kit3d';
 
 export const HX = 100; // la casa por dentro vive en x=100
 
@@ -63,6 +63,7 @@ export const HouseExterior: React.FC<{f: number; lightning?: number}> = ({f, lig
       {/* ventanas */}
       {win(-2.0, 1.75, false)}{win(2.0, 1.75, false)}{win(-2.0, 3.9, false)}
       {win(2.0, 3.9, true)}
+      <Glow position={[2, 3.9, 2.2]} size={2.2 * flick} opacity={0.35} />
       <pointLight position={[2, 3.9, 1.2]} color="#ffb84a" intensity={9 * flick} distance={7} decay={2} />
       <pointLight position={[2, 3.9, 2.9]} color="#ffb84a" intensity={4 * flick} distance={5} decay={2} />
       {/* puerta */}
@@ -85,7 +86,8 @@ export const HouseExterior: React.FC<{f: number; lightning?: number}> = ({f, lig
       <group position={[-1.25, 2.2, 2.15]}>
         <mesh><boxGeometry args={[0.16, 0.28, 0.16]} /><meshStandardMaterial color="#ffcf70" emissive="#ffb040" emissiveIntensity={2.2 * flick} /></mesh>
         <mesh position={[0, 0.2, 0]}><coneGeometry args={[0.14, 0.12, 4]} /><meshStandardMaterial color="#1a0f0a" /></mesh>
-        <pointLight color="#ffb347" intensity={10 * flick} distance={8} decay={2} position={[0, 0, 0.3]} castShadow />
+        <pointLight color="#ffb347" intensity={10 * flick} distance={8} decay={2} position={[0, 0, 0.3]} />
+        <Glow position={[0, 0, 0.12]} size={1.1 * flick} opacity={0.75} />
       </group>
       {/* camino */}
       {Array.from({length: 9}).map((_, i) => (
@@ -189,6 +191,7 @@ export const Hall: React.FC<{f: number; open: number; seam: number}> = ({f, open
             <mesh material={M.gold}><boxGeometry args={[0.1, 0.16, 0.08]} /></mesh>
             <mesh position={[0, 0.14, 0.04]}><cylinderGeometry args={[0.025, 0.03, 0.16, 8]} /><meshStandardMaterial color="#efe4c8" /></mesh>
             <mesh position={[0, 0.27, 0.04]} scale={[1, 1.6 * fl, 1]}><sphereGeometry args={[0.03, 10, 8]} /><meshBasicMaterial color="#ffd37a" /></mesh>
+            <Glow position={[0, 0.28, 0.06]} size={0.45 * fl} opacity={0.8} />
             {s === 1 && <pointLight position={[0, 0.3, 0.3]} color="#ffb85a" intensity={5.5 * fl} distance={5} decay={2} />}
           </group>
         ));
@@ -289,11 +292,13 @@ export const LetterRoom: React.FC<{f: number; rise: number}> = ({f, rise}) => {
         <mesh position={[0, 0.75, 0]} material={M.wood} castShadow><boxGeometry args={[1.6, 0.08, 0.8]} /></mesh>
         {[[-0.7, -0.3], [0.7, -0.3], [-0.7, 0.3], [0.7, 0.3]].map(([x, z], i) => <mesh key={i} position={[x, 0.37, z]} material={M.wood}><boxGeometry args={[0.07, 0.74, 0.07]} /></mesh>)}
         <mesh position={[0.4, 0.95, 0]}><cylinderGeometry args={[0.1, 0.14, 0.3, 12, 1, true]} /><meshStandardMaterial color="#e8b04a" emissive="#ffb347" emissiveIntensity={1.2} side={THREE.DoubleSide} /></mesh>
+        <Glow position={[0.4, 0.95, 0.15]} size={0.9} opacity={0.6} />
         <pointLight position={[0.4, 1.0, 0.1]} color="#ffb347" intensity={6 + Math.sin(f / 5) * 0.6} distance={6} decay={2} />
       </group>
       {/* ventana trasera con luz */}
       <mesh position={[0, 1.9, -D + 0.02]}><planeGeometry args={[1.9, 2.8]} /><meshBasicMaterial color="#ffe3a8" /></mesh>
       <mesh position={[0, 3.3, -D + 0.03]}><circleGeometry args={[0.95, 32, 0, Math.PI]} /><meshBasicMaterial color="#ffe3a8" /></mesh>
+      <Glow position={[0, 2.1, -D + 0.3]} size={4.5} color="#ffe0a0" opacity={0.5} />
       {beam(0, 1.1, 0.07)}{beam(-0.5, 0.6, 0.05)}
       <spotLight position={[0, 3.2, -D + 0.5]} target={spotTarget} color="#ffd9a0" intensity={90} angle={0.9} penumbra={0.8} distance={16} decay={1.6} />
       <pointLight position={[0, 2.8, -3]} color="#ffcc88" intensity={10} distance={12} decay={2} />

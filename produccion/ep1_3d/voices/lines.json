@@ -1,0 +1,12 @@
+[
+ {"id":"narr1","who":"NARR","text":"Mi abuela murió un martes.","voice":"es-MX-DaliaNeural","rate":"-10%","pitch":"-6Hz"},
+ {"id":"narr2","who":"NARR","text":"Me dejó una casa... y un silencio que nunca entendí.","voice":"es-MX-DaliaNeural","rate":"-12%","pitch":"-6Hz"},
+ {"id":"mar1","who":"MARISOL","text":"¿Don Aurelio? ¿Qué hace aquí, con esta lluvia?","voice":"es-MX-DaliaNeural","rate":"-2%","pitch":"-2Hz"},
+ {"id":"aur1","who":"AURELIO","text":"Esperándote, mija. Tu abuela me pidió que te diera esto.","voice":"es-CO-GonzaloNeural","rate":"-14%","pitch":"-14Hz"},
+ {"id":"aur2","who":"AURELIO","text":"Y que no se lo enseñes a nadie. A nadie.","voice":"es-CO-GonzaloNeural","rate":"-18%","pitch":"-16Hz"},
+ {"id":"narr3","who":"NARR","text":"Yo solo venía a vender la casa.","voice":"es-MX-DaliaNeural","rate":"-10%","pitch":"-6Hz"},
+ {"id":"mar2","who":"MARISOL","text":"Esa puerta... no estaba aquí.","voice":"es-MX-DaliaNeural","rate":"-14%","pitch":"-4Hz"},
+ {"id":"mar3","who":"MARISOL","text":"Son cartas... cientos de cartas.","voice":"es-MX-DaliaNeural","rate":"-10%","pitch":"-3Hz"},
+ {"id":"elv1","who":"ELVIRA","text":"Mi querida Marisol... si estás leyendo esto, ya no puedo protegerte.","voice":"es-PE-CamilaNeural","rate":"-16%","pitch":"-8Hz"},
+ {"id":"elv2","who":"ELVIRA","text":"No confíes en Tomás.","voice":"es-PE-CamilaNeural","rate":"-22%","pitch":"-10Hz"}
+]
